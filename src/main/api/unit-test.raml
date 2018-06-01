@@ -1,0 +1,38 @@
+#%RAML 1.0
+title: unit-test
+baseUri: http://localhost:8082
+
+/accounts:
+   get:
+    description: select * from accounts
+    responses: 
+      200:
+        body: 
+          application/json: 
+   post:
+    description: 
+    body: 
+      application/json:
+        example: |
+          {
+            "id": "1234",
+            "success": true
+          }
+    responses: 
+      201:
+        body: 
+          application/json:
+    
+   put:
+    description: 
+    body: 
+      application/json:
+        example: |
+          {
+            "id": "1234",
+            "success": true
+          }
+    responses: 
+      201:
+        body: 
+          application/json:

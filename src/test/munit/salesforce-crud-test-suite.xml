@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  	xmlns:mock="http://www.mulesoft.org/schema/mule/mock" 
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd">
+    <munit:config name="munit" doc:name="MUnit configuration"/>
+    
+    <spring:beans>
+        <spring:import resource="classpath:salesforce-crud.xml"/>
+        <spring:import resource="classpath:global.xml"/>
+    </spring:beans>
+    
+   <!-- <scripting:script name="groovyScriptSfdcPayloadGenerator" engine="Groovy" doc:name="Script">
+		<![CDATA[
+		
+		List list = new ArrayList();
+		
+		Map item1 = new HashMap();
+		item1.put("Id", "123456");
+		item1.put("Name", "Name1");
+		item1.put("CreatedDate", "2018-05-23T20:07:41.000Z");
+		
+		Map item2 = new HashMap();
+		item2.put("Id", "1234567");
+		item2.put("Name", "Name2");
+		item2.put("CreatedDate", "2018-05-08T21:02:00.000Z");
+		
+		Map item3 = new HashMap();
+		item3.put("Id", "12345678");
+		item3.put("Name", "Name3");
+		item3.put("CreatedDate", "2018-05-08T21:02:00.000Z");
+		
+		list.add(item1);
+		list.add(item2);
+		list.add(item3);
+		  
+		return list;
+		
+		]]>
+	</scripting:script>
+	
+	
+	<scripting:script name="groovyScriptSfdcUpdate" engine="Groovy" doc:name="Script">
+		<![CDATA[
+		
+		List list = new ArrayList();
+
+		Map item1 = new HashMap();
+		item1.put("id", "123456");
+		item1.put("success", true);
+		item1.put("errors", "{[0]}");
+		
+		list.add(item1);
+		  
+		return list;
+		
+		]]>
+	</scripting:script>
+	
+	
+	<scripting:script name="groovyScriptSfdcCreate" engine="Groovy" doc:name="Script">
+		<![CDATA[
+		
+		List list = new ArrayList();
+
+		Map item1 = new HashMap();
+		item1.put("id", "123456");
+		item1.put("success", true);
+		item1.put("errors", "{[0]}");
+		
+		list.add(item1);
+		  
+		return list;
+		
+		]]>
+	</scripting:script> -->
+    <scripting:script name="salesforceSelect" engine="Groovy" file="C:\Users\UGUAZELLI\AnypointStudio\workspace\unit-test\src\test\resources\groovy\salesforceSelect.groovy" doc:name="Script"/>
+    <scripting:script name="salesforceCreate" engine="Groovy" file="C:\Users\UGUAZELLI\AnypointStudio\workspace\unit-test\src\test\resources\groovy\salesforceCreate.groovy" doc:name="Script"/>
+    <scripting:script name="salesforceUpdate" engine="Groovy" file="C:\Users\UGUAZELLI\AnypointStudio\workspace\unit-test\src\test\resources\groovy\salesforceUpdate.groovy" doc:name="Script"/>
+
+
+	<munit:test name="salesforce-select-test"
+		description="When request Salesforce Account return a Payload">
+		<mock:when messageProcessor=".*:.*" doc:name="Mock Salesforce Select All">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Salesforce Select All']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[resultOfScript('salesforceSelect')]"/>
+
+		</mock:when>
+		<flow-ref name="salesforce-select-all" doc:name="Flow refernce to Salesforce Select All" />
+        <object-to-string-transformer doc:name="Object to String"/>
+        <munit:assert-on-equals expectedValue="#[getResource('expected/selectPayload.json').asString().replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" actualValue="#[payload.replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" doc:name="Assert Equals" message="The response payload is not correct!"/>
+	</munit:test>
+    <munit:test name="salesforce-create-test" description="MUnit Test">
+        <mock:when messageProcessor=".*:.*" doc:name="Mock Salesforce Create">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Salesforce']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[resultOfScript('salesforceCreate')]" mimeType="application/java"/>
+
+        </mock:when>
+        <munit:set payload="#[getResource('input/create.json').asString()]" mimeType="application/json" doc:name="Set input Payload Message"/>
+        <flow-ref name="salesforce-create" doc:name="Flow reference to Salesforce Create"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <munit:assert-on-equals expectedValue="#[getResource('expected/createPayload.json').asString().replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" actualValue="#[payload.replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" doc:name="Assert Equals" message="The response payload is not correct!"/>
+    </munit:test>
+    <munit:test name="salesforce-update-test" description="MUnit Test">
+        <mock:when messageProcessor=".*:.*" doc:name="Mock Salesforce Update">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Salesforce']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[resultOfScript('salesforceUpdate')]"/>
+
+        </mock:when>
+        <munit:set payload="#[getResource('input/update.json').asString()]" mimeType="application/json" doc:name="Set Input Payload Message"/>
+        <flow-ref name="salesforce-update" doc:name="Flow reference to Salesforce Update"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <munit:assert-on-equals expectedValue="#[getResource('expected/updatePayload.json').asString().replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" actualValue="#[payload.replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" doc:name="Assert Equals" message="The response payload is not correct!"/>
+    </munit:test>
+</mule>
