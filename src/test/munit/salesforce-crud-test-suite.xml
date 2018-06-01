@@ -20,77 +20,13 @@ http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/mu
         <spring:import resource="classpath:global.xml"/>
     </spring:beans>
     
-   <!-- <scripting:script name="groovyScriptSfdcPayloadGenerator" engine="Groovy" doc:name="Script">
-		<![CDATA[
-		
-		List list = new ArrayList();
-		
-		Map item1 = new HashMap();
-		item1.put("Id", "123456");
-		item1.put("Name", "Name1");
-		item1.put("CreatedDate", "2018-05-23T20:07:41.000Z");
-		
-		Map item2 = new HashMap();
-		item2.put("Id", "1234567");
-		item2.put("Name", "Name2");
-		item2.put("CreatedDate", "2018-05-08T21:02:00.000Z");
-		
-		Map item3 = new HashMap();
-		item3.put("Id", "12345678");
-		item3.put("Name", "Name3");
-		item3.put("CreatedDate", "2018-05-08T21:02:00.000Z");
-		
-		list.add(item1);
-		list.add(item2);
-		list.add(item3);
-		  
-		return list;
-		
-		]]>
-	</scripting:script>
-	
-	
-	<scripting:script name="groovyScriptSfdcUpdate" engine="Groovy" doc:name="Script">
-		<![CDATA[
-		
-		List list = new ArrayList();
-
-		Map item1 = new HashMap();
-		item1.put("id", "123456");
-		item1.put("success", true);
-		item1.put("errors", "{[0]}");
-		
-		list.add(item1);
-		  
-		return list;
-		
-		]]>
-	</scripting:script>
-	
-	
-	<scripting:script name="groovyScriptSfdcCreate" engine="Groovy" doc:name="Script">
-		<![CDATA[
-		
-		List list = new ArrayList();
-
-		Map item1 = new HashMap();
-		item1.put("id", "123456");
-		item1.put("success", true);
-		item1.put("errors", "{[0]}");
-		
-		list.add(item1);
-		  
-		return list;
-		
-		]]>
-	</scripting:script> -->
     <scripting:script name="salesforceSelect" engine="Groovy" file="C:\Users\UGUAZELLI\AnypointStudio\workspace\unit-test\src\test\resources\groovy\salesforceSelect.groovy" doc:name="Script"/>
     <scripting:script name="salesforceCreate" engine="Groovy" file="C:\Users\UGUAZELLI\AnypointStudio\workspace\unit-test\src\test\resources\groovy\salesforceCreate.groovy" doc:name="Script"/>
     <scripting:script name="salesforceUpdate" engine="Groovy" file="C:\Users\UGUAZELLI\AnypointStudio\workspace\unit-test\src\test\resources\groovy\salesforceUpdate.groovy" doc:name="Script"/>
 
 
 	<munit:test name="salesforce-select-test"
-		description="When request Salesforce Account return a Payload">
+		description="When request an Account it should returns a Payload">
 		<mock:when messageProcessor=".*:.*" doc:name="Mock Salesforce Select All">
             <mock:with-attributes>
                 <mock:with-attribute name="doc:name" whereValue="#['Salesforce Select All']"/>
@@ -102,7 +38,7 @@ http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/mu
         <object-to-string-transformer doc:name="Object to String"/>
         <munit:assert-on-equals expectedValue="#[getResource('expected/selectPayload.json').asString().replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" actualValue="#[payload.replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" doc:name="Assert Equals" message="The response payload is not correct!"/>
 	</munit:test>
-    <munit:test name="salesforce-create-test" description="MUnit Test">
+    <munit:test name="salesforce-create-test" description="When create an Account it should returns a confirm Payload">
         <mock:when messageProcessor=".*:.*" doc:name="Mock Salesforce Create">
             <mock:with-attributes>
                 <mock:with-attribute name="doc:name" whereValue="#['Salesforce']"/>
@@ -115,7 +51,7 @@ http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/mu
         <object-to-string-transformer doc:name="Object to String"/>
         <munit:assert-on-equals expectedValue="#[getResource('expected/createPayload.json').asString().replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" actualValue="#[payload.replaceAll(&quot;\\s+&quot;,&quot;&quot;)]" doc:name="Assert Equals" message="The response payload is not correct!"/>
     </munit:test>
-    <munit:test name="salesforce-update-test" description="MUnit Test">
+    <munit:test name="salesforce-update-test" description="When update an Account it should returns a confirm Payload">
         <mock:when messageProcessor=".*:.*" doc:name="Mock Salesforce Update">
             <mock:with-attributes>
                 <mock:with-attribute name="doc:name" whereValue="#['Salesforce']"/>
