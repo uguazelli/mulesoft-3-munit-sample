@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/moc
         <spring:import resource="classpath:salesforce-apikit.xml"/>
     </spring:beans>
     <munit:test name="salesforce-apikit-update-account-test" description="Should call update account flow">
-        <munit:set payload="#[getResource('input/update.json').asString()]" mimeType="application/json" doc:name="Set Message"/>
+        <munit:set payload="#[getResource('input/update.json').asString()]" mimeType="application/json" doc:name="Set Input Message"/>
         <flow-ref name="put:/accounts:unit-test-config" doc:name="Flow-ref to put:/accounts:unit-test-config"/>
         <mock:verify-call messageProcessor=".*:.*" doc:name="Verify Call">
             <mock:with-attributes>
@@ -28,7 +28,7 @@ http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/moc
         </mock:verify-call>
     </munit:test>
     <munit:test name="salesforce-apikit-create-account-test" description="Should call create account flow">
-        <munit:set payload="#[getResource('input/create.json').asString()]" doc:name="Set Message"/>
+        <munit:set payload="#[getResource('input/create.json').asString()]" doc:name="Set Input Message"/>
         <flow-ref name="post:/accounts:unit-test-config" doc:name="Flow-ref to post:/accounts:unit-test-config"/>
         <mock:verify-call messageProcessor=".*:.*" doc:name="Verify Call">
             <mock:with-attributes>
