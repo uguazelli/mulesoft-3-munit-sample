@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:mock="http://www.mulesoft.org/schema/mule/mock" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd">
+    <munit:config mock-connectors="false" mock-inbounds="false" name="munit" doc:name="MUnit configuration"/>
+    <spring:beans>
+        <spring:import resource="classpath:global.xml"/>
+        <spring:import resource="classpath:salesforce-crud.xml"/>
+        <spring:import resource="classpath:salesforce-apikit.xml"/>
+    </spring:beans>
+    <munit:test name="salesforce-apikit-update-account-test" description="Should call update account flow">
+        <munit:set payload="#[getResource('input/update.json').asString()]" mimeType="application/json" doc:name="Set Message"/>
+        <flow-ref name="put:/accounts:unit-test-config" doc:name="Flow-ref to put:/accounts:unit-test-config"/>
+        <mock:verify-call messageProcessor=".*:.*" doc:name="Verify Call">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="salesforce-update"/>
+            </mock:with-attributes>
+        </mock:verify-call>
+    </munit:test>
+    <munit:test name="salesforce-apikit-select-account-test" description="Should call select all account flow">
+        <flow-ref name="get:/accounts:unit-test-config" doc:name="Flow-ref to get:/accounts:unit-test-config"/>
+        <mock:verify-call messageProcessor=".*:.*" doc:name="Verify Call">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="salesforce-select-all"/>
+            </mock:with-attributes>
+        </mock:verify-call>
+    </munit:test>
+    <munit:test name="salesforce-apikit-create-account-test" description="Should call create account flow">
+        <munit:set payload="#[getResource('input/create.json').asString()]" doc:name="Set Message"/>
+        <flow-ref name="post:/accounts:unit-test-config" doc:name="Flow-ref to post:/accounts:unit-test-config"/>
+        <mock:verify-call messageProcessor=".*:.*" doc:name="Verify Call">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="salesforce-create"/>
+            </mock:with-attributes>
+        </mock:verify-call>
+    </munit:test>
+</mule>
